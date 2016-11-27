@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"os"
-    "fmt"
 	"strings"
 )
 
@@ -11,7 +11,7 @@ import (
 // a function that returns an int.
 func fibonacci() func() int {
 	var x1, x2 int = 1, 1
-	return func () int {
+	return func() int {
 		x := x1
 		x1 = x2
 		x2 += x
@@ -19,14 +19,13 @@ func fibonacci() func() int {
 	}
 }
 
-
 type rot13Reader struct {
 	r io.Reader
 }
 
 func (rot *rot13Reader) Read(buf []byte) (int, error) {
 	k, err := rot.r.Read(buf)
-	for i := 0 ; i < k ; i++ {
+	for i := 0; i < k; i++ {
 		c := buf[i]
 		if 'a' <= c && c <= 'z' {
 			c += 13
@@ -45,7 +44,6 @@ func (rot *rot13Reader) Read(buf []byte) (int, error) {
 	}
 	return k, err
 }
-
 
 func main() {
 	f, g := fibonacci(), fibonacci()
