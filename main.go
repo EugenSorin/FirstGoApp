@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strings"
+    "golang.org/x/tour/pic"
 )
 
 // fibonacci is a function that returns
@@ -45,7 +47,38 @@ func (rot *rot13Reader) Read(buf []byte) (int, error) {
 	return k, err
 }
 
+// Image implementation
+type Image struct{
+	w, h int    // Dimensions
+	b [][] color.RGBAColor
+}
+
+func (Image) ColorModel() color.Model {
+    return color.RGBAModel
+}
+
+func (i Image) Bounds() image.Rectangle {
+    return image.Rect(0, 0, i.w, i.h)
+}
+
+func (i Image) At(x, y int) color.Color {
+    return i.b[y][x]
+}
+
+func (i *Image) init(w, h int) {
+    if w <= 0 || h <= 0 { return }
+    i.w = w; i.h = h; i.b = make([][]color.RGBA, h)
+    for y := 0 ; y < h ; y++ {
+        i.b[y] = make([]color.RGBA, w)
+        for x := 0 ; x < w ; x++ {
+			i.b[y][x] = color.RGBA{uint8(3*x), uint8(5*y), uint8((x + y) / 2) | 32, 255}
+        }
+    }
+}
+
 func main() {
+	fmt.Println("GOLang version: ", runtime.Version())
+	fmt.Println("Două funcții (șiruri) Fibonacci:")
 	f, g := fibonacci(), fibonacci()
 	for i := 0; i < 10; i++ {
 		fmt.Println(f(), g())
@@ -53,4 +86,8 @@ func main() {
 	s := strings.NewReader("Lbh penpxrq gur pbqr!")
 	r := rot13Reader{s}
 	io.Copy(os.Stdout, &r)
+
+    m := Image{}
+    m.init(86, 52)
+    pic.showImage(m)
 }
